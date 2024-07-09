@@ -1,8 +1,8 @@
-DROP DATABASE IF EXISTS employees_db;
-CREATE DATABASE employees_db;
+DROP DATABASE IF EXISTS employee_db;
+CREATE DATABASE employee_db;
 
 -- Switch to the newly created database to continue with table creation
-\c employees_db
+\c employee_db
 
 CREATE TABLE department (
     id SERIAL PRIMARY KEY,

@@ -18,14 +18,13 @@ const pool = new Pool({
   user: 'postgres',
   password: process.env.PG_PASSWORD,
   host: 'localhost',
-  port: 5432,
-  database: 'employees_db',
+  database: 'employee_db',
 });
 
 pool.connect();
 
-// Hardcoded query: DELETE FROM employees_db WHERE id = 3;
-pool.query(`DELETE FROM employees_db WHERE id = $1`, [3], (err, result) => {
+// Hardcoded query: DELETE FROM employee_db WHERE id = 3;
+pool.query(`DELETE FROM employee_db WHERE id = $1`, [3], (err, result) => {
   if (err) {
     console.log(err);
   }
@@ -33,7 +32,7 @@ pool.query(`DELETE FROM employees_db WHERE id = $1`, [3], (err, result) => {
 });
 
 // Query database
-pool.query('SELECT * FROM employees_db', (err, result) => {
+pool.query('SELECT * FROM employee_db', (err, result) => {
   if (err) {
     console.log(err);
   }
