@@ -72,7 +72,14 @@ const viewAllDepartments = () => {
 }
 
 const addDepartment = () => { 
-
+  inquirer.prompt(addDepartmentQuestions).then((answers) => {
+    pool.query('INSERT INTO department (department) VALUES ($1)', [answers.department], (err, res) => {
+      if (err) throw err;
+      console.log("Department added successfully");
+    });
+  }).catch((error) => {
+    console.log(error)
+  });
 }
 
 const manageEmployees = (answers) => {
