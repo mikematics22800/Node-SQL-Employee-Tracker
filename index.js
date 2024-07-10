@@ -54,7 +54,14 @@ const viewAllRoles = () => {
 };
 
 const addRole = () => {
-
+  inquirer.prompt(addRoleQuestions).then((answers) => {
+    pool.query('INSERT INTO role (role_id, salary, department_id) VALUES ($1, $2, $3)', [answers.role_id, answers.salary, answers.department_id], (err, res) => {
+      if (err) throw err;
+      console.log("Role added successfully");
+    });
+  }).catch((error) => {
+    console.log(error)
+  });
 }
 
 const viewAllDepartments = () => {
