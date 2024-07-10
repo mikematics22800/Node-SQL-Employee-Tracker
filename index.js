@@ -65,7 +65,10 @@ const addRole = () => {
 }
 
 const viewAllDepartments = () => {
-
+  pool.query('SELECT * FROM department', (err, res) => {
+    if (err) throw err;
+    console.table(res.rows);
+  });
 }
 
 const addDepartment = () => { 
