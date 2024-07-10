@@ -1,17 +1,7 @@
-require('dotenv').config();
-const express = require('express');
-// Import and require Pool (node-postgres)
-// We'll be creating a Connection Pool. Read up on the benefits here: https://node-postgres.com/features/pooling
-const { Pool } = require('pg');
-
-const PORT = process.env.PORT || 3001;
-const app = express();
-
-console.log(process.env.PG_PASSWORD);
-
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+import inquirer from "inquirer";
+import pg from "pg";
+const { Pool } = pg;
+import {questions, addDepartmentQuestions, addEmployeeQuestions, addRoleQuestions} from "./libs/questions.js"
 
 // Connect to database
 const pool = new Pool({
@@ -23,27 +13,66 @@ const pool = new Pool({
 
 pool.connect();
 
-// Hardcoded query: DELETE FROM employee_db WHERE id = 3;
-pool.query(`DELETE FROM employee_db WHERE id = $1`, [3], (err, result) => {
-  if (err) {
-    console.log(err);
+const viewAllEmployees = () => {
+  pool.query('SELECT * FROM employee', (err, res) => {
+    if (err) throw err;
+    console.table(res.rows);
+  });
+}
+
+const addEmployee = () => {
+  inquirer.prompt(addEmployeeQuestions).then((answers) => {
+    pool.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)', [answers.first_name, answers.last_name, answers.role_id, answers.manager_id], (err, res) => {
+      if (err) throw err;
+      console.log("Employee added successfully");
+    });
+  }).catch((error) => {
+    console.log(error)
+  });
+}
+
+const updateEmployeeRole = () => {
+
+};
+
+const viewAllRoles = () => {
+
+};
+
+const addRole = () => {
+
+}
+
+const viewAllDepartments = () => {
+
+}
+
+const addDepartment = () => { 
+
+}
+
+const manageEmployees = (answers) => {
+  if (answers.option  == "View All Employees") {
+    viewAllEmployees()
+  } else if (answers.option == "Add Employee") {
+    addEmployee()
+  } else if (answers.option == "Update Employee Role") {
+    updateEmployeeRole()
+  } else if (answers.option == "View All Roles") {
+    viewAllRoles()
+  } else if (answers.option == "Add Role") {
+    addRole()
+  } else if (answers.option == "View All Departments") {
+    viewAllDepartments()
+  } else if (answers.option == "Add Department") {
+    addDepartment()
+  } else {
+    console.log("Invalid option");
   }
-  console.log(result);
-});
+}
 
-// Query database
-pool.query('SELECT * FROM employee_db', (err, result) => {
-  if (err) {
-    console.log(err);
-  }
-  console.log(result);
-});
-
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-  res.status(404).end();
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+inquirer.prompt(questions).then((answers) => {
+  manageEmployees(answers)
+}).catch((error) => {
+  console.log(error)
 });
