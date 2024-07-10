@@ -32,7 +32,18 @@ const addEmployee = () => {
 }
 
 const updateEmployeeRole = () => {
-
+  pool.query('SELECT first_name, last_name FROM employee', (err, res) => {
+    if (err) throw err;
+    const employees = res.rows.map(row => `${row.first_name} ${row.last_name}`)
+    inquirer.prompt([
+      {
+        type: 'list',
+        name: 'employee',
+        message: 'Select employee',
+        choices: employees,
+      },
+    ])
+  });
 };
 
 const viewAllRoles = () => {
