@@ -47,7 +47,10 @@ const updateEmployeeRole = () => {
 };
 
 const viewAllRoles = () => {
-
+  pool.query('SELECT * FROM role', (err, res) => {
+    if (err) throw err;
+    console.table(res.rows);
+  });
 };
 
 const addRole = () => {
