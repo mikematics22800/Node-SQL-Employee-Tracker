@@ -1,17 +1,15 @@
-import inquirer from "inquirer";
-import pg from "pg";
-const { Pool } = pg;
-import {questions, addDepartmentQuestions, addEmployeeQuestions, addRoleQuestions} from "./libs/questions.js"
+const inquirer = require('inquirer');
+const {operations, addDepartmentQuestions, addEmployeeQuestions, addRoleQuestions} = require('./libs/questions.js');
+const { Pool } = require('pg');
 
-// Connect to database
+console.log(process.env.PASSWORD)
+
 const pool = new Pool({
   user: 'postgres',
-  password: process.env.PG_PASSWORD,
+  password: 'psql69420',
   host: 'localhost',
   database: 'employee_db',
 });
-
-pool.connect();
 
 const viewAllEmployees = () => {
   pool.query('SELECT * FROM employee', (err, res) => {
@@ -82,28 +80,40 @@ const addDepartment = () => {
   });
 }
 
-const manageEmployees = (answers) => {
-  if (answers.option  == "View All Employees") {
-    viewAllEmployees()
-  } else if (answers.option == "Add Employee") {
-    addEmployee()
-  } else if (answers.option == "Update Employee Role") {
-    updateEmployeeRole()
-  } else if (answers.option == "View All Roles") {
-    viewAllRoles()
-  } else if (answers.option == "Add Role") {
-    addRole()
-  } else if (answers.option == "View All Departments") {
-    viewAllDepartments()
-  } else if (answers.option == "Add Department") {
-    addDepartment()
-  } else {
-    console.log("Invalid option");
+const manageEmployees = (operation) => {
+  switch (operation) {
+    case "View All Employees":
+      viewAllEmployees()
+      break;
+    case "Add Employee":
+      addEmployee()
+      break;
+    case "Update Employee Role":
+      updateEmployeeRole()
+      break;
+    case "View All Roles":
+      viewAllRoles()
+      break;
+    case "Add Role":
+      addRole()
+      break;
+    case "View All Departments":
+      viewAllDepartments()
+      break;
+    case "Add Department":
+      addDepartment()
+      break;
+    default:
+      console.log("Invalid option");
   }
 }
 
-inquirer.prompt(questions).then((answers) => {
-  manageEmployees(answers)
+pool.connect().then(() => {
+  inquirer.prompt(operations).then((answer) => {
+    manageEmployees(answer.operation)
+  }).catch((error) => {
+    console.log(error)
+  });
 }).catch((error) => {
   console.log(error)
-});
+})

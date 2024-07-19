@@ -1,7 +1,7 @@
-export const questions = [
+const operations = [
   {  
     "type": "list",
-    "name": "option",
+    "name": "operation",
     "message": "What would you like to do?",
     "choices": [
       "View All Employees",
@@ -15,51 +15,53 @@ export const questions = [
   }
 ]
 
-export const addEmployeeQuestions = [
+const addEmployeeQuestions = [
   {
     "type": "input",
     "name": "first_name",
-    "message": "Enter employee first name"
+    "message": "Enter first name:"
   },
   {
     "type": "input",
     "name": "last_name",
-    "message": "Enter employee last name"
+    "message": "Enter last name:"
   },
   {
     "type": "input",
     "name": "role_id",
-    "message": "Enter employee role id"
+    "message": "Enter role id:"
   },
   {
     "type": "input",
     "name": "manager_id",
-    "message": "Enter employee manager id"
+    "message": "Enter manager id:"
   }
 ]
 
-export const addDepartmentQuestions = [
+const addDepartmentQuestions = [
   {
     "type": "input",
     "name": "department",
-    "message": "Enter department name"
+    "message": "Enter department name:"
   }
 ]
 
-export const addRoleQuestions = [
+const addRoleQuestions = [
   {
     "type": "input",
     "name": "role_id",
-    "message": "Enter role id"
+    "message": "Enter role id:"
   },
   {
     "type": "input",
     "name": "salary",
-    "message": "Enter role salary"
+    "message": "Enter role salary:"
   },
   {
     "type": "input",
     "name": "department_id",
-    "message": "Enter role department id"
+    "message": "Enter role department id:"
   }
 ]
+
+module.exports = {operations, addEmployeeQuestions, addDepartmentQuestions, addRoleQuestions};

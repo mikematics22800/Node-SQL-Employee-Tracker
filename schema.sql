@@ -9,6 +9,13 @@ CREATE TABLE department (
     name VARCHAR(30) UNIQUE NOT NULL
 );
 
+INSERT INTO department (name) VALUES
+('Sales'),
+('Engineering'),
+('Finance'),
+('Legal'),
+('Human Resources');
+
 CREATE TABLE role (
     id SERIAL PRIMARY KEY,
     title VARCHAR(30) UNIQUE NOT NULL,
@@ -16,6 +23,14 @@ CREATE TABLE role (
     department_id INT NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department(id)
 );
+
+
+INSERT INTO role (title, salary, department_id) VALUES
+('Salesperson', 100000, 1),
+('Engineer', 120000, 2),
+('Accountant', 125000, 3),
+('Lawyer', 130000, 4),
+('HR Representative', 110000, 5);
 
 CREATE TABLE employee (
     id SERIAL PRIMARY KEY,
@@ -26,3 +41,4 @@ CREATE TABLE employee (
     FOREIGN KEY (role_id) REFERENCES role(id),
     FOREIGN KEY (manager_id) REFERENCES employee(id)
 );
+
