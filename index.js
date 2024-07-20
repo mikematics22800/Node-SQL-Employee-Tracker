@@ -36,7 +36,8 @@ const addEmployee = async () => {
 const updateEmployeeRole = async () => {
   try {
     const answers = await inquirer.prompt(updEmpRole);
-    await pool.query('UPDATE employee SET role_id = $1 WHERE employee_id = $2', [answers.role_id, answers.employee_id]);
+    await pool.query('UPDATE employee SET role_id = $1 WHERE id = $2', [answers.role_id, answers.employee_id]);
+    console.log("Employee role updated successfully");
   } catch (err) {
     console.log(err)
   }
@@ -56,7 +57,7 @@ const viewAllRoles = async () => {
 const addNewRole = async () => {
   try {
     const answers =  await inquirer.prompt(addRole);
-    await pool.query('INSERT INTO role (role_id, salary, department_id) VALUES ($1, $2, $3)', [answers.role_id, answers.salary, answers.department_id]);
+    await pool.query('INSERT INTO role (id, salary, department_id) VALUES ($1, $2, $3)', [answers.role_id, answers.salary, answers.department_id]);
     console.log("Role added successfully");
   } catch (err) {
     console.log(err)
@@ -88,7 +89,7 @@ const addDepartment = async () => {
 const deleteEmployee = async () => {
   try {
     const answers = await inquirer.prompt(delEmp);
-    await pool.query('DELETE FROM employee WHERE employee_id = $1', [answers.employee_id]);
+    await pool.query('DELETE FROM employee WHERE id = $1', [answers.employee_id]);
     console.log("Employee deleted successfully");
   } catch (err) {
     console.log(err)
@@ -99,7 +100,7 @@ const deleteEmployee = async () => {
 const deleteRole = async () => {
   try {
     const answers = await inquirer.prompt(delRole);
-    await pool.query('DELETE FROM role WHERE role_id = $1', [answers.role_id]);
+    await pool.query('DELETE FROM role WHERE id = $1', [answers.role_id]);
     console.log("Role deleted successfully");
   } catch(err) {
     console.log(err)
@@ -110,7 +111,7 @@ const deleteRole = async () => {
 const deleteDepartment = async () => {
   try {
     const answers = await inquirer.prompt(delDep);
-    await pool.query('DELETE FROM department WHERE department_id = $1', [answers.department_id]);
+    await pool.query('DELETE FROM department WHERE id = $1', [answers.department_id]);
     console.log("Department deleted successfully");
   } catch(err) {
     console.log(err)
@@ -121,7 +122,7 @@ const deleteDepartment = async () => {
 const updateEmployeeManager = async () => {
   try {
     const answers = await inquirer.prompt(updEmpMgr);
-    await pool.query('UPDATE employee SET manager_id = $1 WHERE employee_id = $2', [answers.manager_id, answers.employee_id]);
+    await pool.query('UPDATE employee SET manager_id = $1 WHERE id = $2', [answers.manager_id, answers.employee_id]);
     console.log("Employee manager updated successfully");
   } catch (err) {
     console.log(err)
