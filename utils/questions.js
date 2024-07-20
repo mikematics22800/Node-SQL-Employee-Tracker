@@ -18,6 +18,7 @@ const operations = [
       "Delete Role",
       "Delete Department",
       "View Total Utilized Budget by Department",
+      "Quit"
     ]
   }
 ]

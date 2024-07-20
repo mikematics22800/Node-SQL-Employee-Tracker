@@ -1,211 +1,253 @@
 const inquirer = require('inquirer');
-const pool = require('./utils/pool');
+const { Pool } = require('pg');
+require('dotenv').config();
 const { operations, addDep, addEmp, addRole, delDep, delEmp, delRole, updEmpRole, updEmpMgr, viewBudget, viewEmpByDep, viewEmpByMgr } = require('./utils/questions');
 
-// Displays all employee records in CLI
-const viewAllEmployees = () => {
-  pool.query('SELECT * FROM employee', (err, res) => {
-    if (err) throw err;
+// Create a new pool to access employee database
+const pool = new Pool({
+  user: 'postgres',
+  password: process.env.PASSWORD,
+  host: 'localhost',
+  database: 'employee_db',
+});
+
+// Display all employee records in CLI
+const viewAllEmployees = async () => {
+  try {
+    const res = await pool.query('SELECT * FROM employee');
     console.table(res.rows);
-  });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// Create new employee from user input
+const addEmployee = async () => {
+  try {
+    const answers = await inquirer.prompt(addEmp);
+    await pool.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)', [answers.first_name, answers.last_name, answers.role_id, answers.manager_id]);
+    console.log("Employee added successfully");
+  } catch (err) {
+    console.log(err)
+  }
 }
 
-// Adds an employee
-const addEmployee = () => {
-  inquirer.prompt(addEmp).then((answers) => {
-    pool.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)', [answers.first_name, answers.last_name, answers.role_id, answers.manager_id], (err, res) => {
-      if (err) throw err;
-      console.log("Employee added successfully");
-    });
-  }).catch((error) => {
-    console.log(error)
-  });
-}
-
-// Updates employee role
-const updateEmployeeRole = () => {
-  inquirer.prompt(updEmpRole).then((answers) => {
-    pool.query('UPDATE employee SET role_id = $1 WHERE employee_id = $2', [answers.role_id, answers.employee_id], (err, res) => {
-      if (err) throw err;
-      console.log("Employee role updated successfully");
-    });
-  }).catch((error) => {
-    console.log(error)
-  });
+// Update employee's role from on user input
+const updateEmployeeRole = async () => {
+  try {
+    const answers = await inquirer.prompt(updEmpRole);
+    await pool.query('UPDATE employee SET role_id = $1 WHERE employee_id = $2', [answers.role_id, answers.employee_id]);
+  } catch (err) {
+    console.log(err)
+  }
 };
 
 // Displays all roles in CLI
-const viewAllRoles = () => {
-  pool.query('SELECT * FROM role', (err, res) => {
-    if (err) throw err;
+const viewAllRoles = async () => {
+  try {
+    const res = await pool.query('SELECT * FROM role');
     console.table(res.rows);
-  });
+  } catch (err) {
+    console.log(err)
+  }
 };
 
-// Adds a new role
-const addNewRole = () => {
-  inquirer.prompt(addRole).then((answers) => {
-    pool.query('INSERT INTO role (role_id, salary, department_id) VALUES ($1, $2, $3)', [answers.role_id, answers.salary, answers.department_id], (err, res) => {
-      if (err) throw err;
-      console.log("Role added successfully");
-    });
-  }).catch((error) => {
-    console.log(error)
-  });
+// Create new role from user input
+const addNewRole = async () => {
+  try {
+    const answers =  await inquirer.prompt(addRole);
+    await pool.query('INSERT INTO role (role_id, salary, department_id) VALUES ($1, $2, $3)', [answers.role_id, answers.salary, answers.department_id]);
+    console.log("Role added successfully");
+  } catch (err) {
+    console.log(err)
+  }
 }
 
-// Displays all departments in CLI
-const viewAllDepartments = () => {
-  pool.query('SELECT * FROM department', (err, res) => {
-    if (err) throw err;
+// Display all departments in CLI
+const viewAllDepartments = async () => {
+  try {
+    const res = await pool.query('SELECT * FROM department');
     console.table(res.rows);
-  });
+  } catch (err) {
+    console.log(err)
+  }
 }
 
-// Adds a new department
-const addDepartment = () => { 
-  inquirer.prompt(addDep).then((answers) => {
-    pool.query('INSERT INTO department (department) VALUES ($1)', [answers.department], (err, res) => {
-      if (err) throw err;
-      console.log("Department added successfully");
-    });
-  }).catch((error) => {
-    console.log(error)
-  });
+// Creates new department based on user input
+const addDepartment = async () => { 
+  try {
+    const answers = await inquirer.prompt(addDep);
+    await pool.query('INSERT INTO department (department) VALUES ($1)', [answers.department]);
+    console.log("Department added successfully");
+  } catch (err) {
+    console.log(err)
+  }
 }
 
-const deleteEmployee = () => {
-  inquirer.prompt(delEmp).then((answers) => {
-    pool.query('DELETE FROM employee WHERE employee_id = $1', [answers.employee_id], (err, res) => {
-      if (err) throw err;
-      console.log("Employee deleted successfully");
-    });
-  }).catch((error) => {
-    console.log(error)
-  });
+// Deletes employee based on user input
+const deleteEmployee = async () => {
+  try {
+    const answers = await inquirer.prompt(delEmp);
+    await pool.query('DELETE FROM employee WHERE employee_id = $1', [answers.employee_id]);
+    console.log("Employee deleted successfully");
+  } catch (err) {
+    console.log(err)
+  }
 }
 
-const deleteRole = () => {
-  inquirer.prompt(delRole).then((answers) => {
-    pool.query('DELETE FROM role WHERE role_id = $1', [answers.role_id], (err, res) => {
-      if (err) throw err;
-      console.log("Role deleted successfully");
-    });
-  }).catch((error) => {
-    console.log(error)
-  });
+// Deletes role based on user input
+const deleteRole = async () => {
+  try {
+    const answers = await inquirer.prompt(delRole);
+    await pool.query('DELETE FROM role WHERE role_id = $1', [answers.role_id]);
+    console.log("Role deleted successfully");
+  } catch(err) {
+    console.log(err)
+  }
 }
 
-const deleteDepartment = () => {
-  inquirer.prompt(delDep).then((answers) => {
-    pool.query('DELETE FROM department WHERE department_id = $1', [answers.department_id], (err, res) => {
-      if (err) throw err;
-      console.log("Department deleted successfully");
-    });
-  }).catch((error) => {
-    console.log(error)
-  });
+// Deletes department based on user input
+const deleteDepartment = async () => {
+  try {
+    const answers = await inquirer.prompt(delDep);
+    await pool.query('DELETE FROM department WHERE department_id = $1', [answers.department_id]);
+    console.log("Department deleted successfully");
+  } catch(err) {
+    console.log(err)
+  }
 }
 
-const updateEmployeeManager = () => {
-  inquirer.prompt(updEmpMgr).then((answers) => {
-    pool.query('UPDATE employee SET manager_id = $1 WHERE employee_id = $2', [answers.manager_id, answers.employee_id], (err, res) => {
-      if (err) throw err;
-      console.log("Employee manager updated successfully");
-    });
-  }).catch((error) => {
-    console.log(error)
-  });
+// Updates employee manager based on user input
+const updateEmployeeManager = async () => {
+  try {
+    const answers = await inquirer.prompt(updEmpMgr);
+    await pool.query('UPDATE employee SET manager_id = $1 WHERE employee_id = $2', [answers.manager_id, answers.employee_id]);
+    console.log("Employee manager updated successfully");
+  } catch (err) {
+    console.log(err)
+  }
 }
 
-const viewEmployeesByManager = () => {
-  inquirer.prompt(viewEmpByMgr).then((answers) => {
-    pool.query('SELECT first_name, last_name FROM employee WHERE manager_id = $1', [answers.manager_id], (err, res) => {
-      if (err) throw err;
-      console.table(res.rows);
-    });
-  }).catch((error) => {
-    console.log(error)
-  })
+// Displays all employees under specified manager in CLI
+const viewEmployeesByManager = async () => {
+  try {
+    const res = await pool.query('SELECT manager_id FROM employee');
+    console.table(res.rows);
+  } catch(err) {
+    console.log(err)
+  }
 }
 
-const viewEmployeesByDepartment = () => {
-  inquirer.prompt(viewEmpByDep).then((answers) => {
-    pool.query('SELECT first_name, last_name FROM employee WHERE department_id = $1', [answers.department_id], (err, res) => {
-      if (err) throw err;
-      console.table(res.rows);
-    });
-  }).catch((error) => {
-    console.log(error)
-  })
+// Displays all employees in specified department in CLI
+const viewEmployeesByDepartment = async () => {
+  try {
+    const res = await pool.query('SELECT department_id FROM employee');
+    console.table(res.rows);
+  } catch(err) {
+    console.log(err)
+  }
 }
 
-const viewDepartmentBudget = () => {
-  inquirer.prompt(viewBudget).then((answers) => {
-    pool.query('SELECT SUM(salary) FROM role WHERE department_id = $1', [answers.department_id], (err, res) => {
-      if (err) throw err;
-      console.table(res.rows);
-    });
-  }).catch((error) => {
-    console.log(error)
-  })
+// Displays total budget for specified department in CLI
+const viewDepartmentBudget = async () => {
+  try {
+    const res = await pool.query('SELECT department_id FROM role');
+    console.table(res.rows);
+  } catch(err) {
+    console.log(err)
+  }
 }
 
 // Performs operation based on user input
 const manageEmployees = (operation) => {
   switch (operation) {
     case "View All Employees":
-      viewAllEmployees()
+      viewAllEmployees().then(() => {
+        promptOperation()
+      })
       break;
     case "Add Employee":
-      addEmployee()
+      addEmployee().then(() => {
+        promptOperation()
+      })
       break;
     case "Update Employee Role":
-      updateEmployeeRole()
+      updateEmployeeRole().then(() => {
+        promptOperation()
+      })
       break;
     case "View All Roles":
-      viewAllRoles()
+      viewAllRoles().then(() => {
+        promptOperation()
+      })
       break;
     case "Add Role":
-      addNewRole()
+      addNewRole().then(() => {
+        promptOperation()
+      })
       break;
     case "View All Departments":
-      viewAllDepartments()
+      viewAllDepartments().then(() => {
+        promptOperation()
+      })
       break;
     case "Add Department":
-      addDepartment()
+      addDepartment().then(() => {
+        promptOperation()
+      })
       break;
     case "Delete Employee":
-      deleteEmployee()
+      deleteEmployee().then(() => {
+        promptOperation()
+      })
       break;
     case "Delete Role":
-      deleteRole()
+      deleteRole().then(() => {
+        promptOperation()
+      })
       break;
     case "Delete Department":
-      deleteDepartment()
+      deleteDepartment().then(() => {
+        promptOperation()
+      })
       break;
     case "Update Employee Manager":
-      updateEmployeeManager()
+      updateEmployeeManager().then(() => {
+        promptOperation()
+      })
       break;
     case "View Employees by Manager":
-      viewEmployeesByManager()
+      viewEmployeesByManager().then(() => {
+        promptOperation()
+      })
       break;
     case "View Employees by Department":
-      viewEmployeesByDepartment()
+      viewEmployeesByDepartment().then(() => {
+        promptOperation()
+      })
       break;
     case "View Total Utilized Budget by Department":
-      viewDepartmentBudget()
+      viewDepartmentBudget().then(() => {
+        promptOperation()
+      })
+      break;
+    case "Quit":
+      pool.end()
       break;
   }
 }
 
-// Connect to the database then prompt user to select operation
-pool.connect().then(() => {
+const promptOperation = () => {
   inquirer.prompt(operations).then((answer) => {
     manageEmployees(answer.operation)
   }).catch((error) => {
     console.log(error)
   });
+}
+
+// Connect to the database then prompt user to select operation
+pool.connect().then(() => {
+  promptOperation()
 }).catch((error) => {
   console.log(error)
 })
