@@ -16,6 +16,7 @@ const operations = [
       "View Employees by Department",
       "Delete Employee",
       "Delete Role",
+    
       "Delete Department",
       "View Total Utilized Budget by Department",
       "Quit"
@@ -26,7 +27,7 @@ const operations = [
 const addDep = [
   {
     "type": "input",
-    "name": "department",
+    "name": "department_name",
     "message": "Enter department name:"
   }
 ]
@@ -57,8 +58,8 @@ const addEmp = [
 const addRole = [
   {
     "type": "input",
-    "name": "role_id",
-    "message": "Enter role id:"
+    "name": "title",
+    "message": "Enter role title:"
   },
   {
     "type": "input",
@@ -133,7 +134,7 @@ const viewBudget = [
 
 const viewEmpByDep = [
   {
-    "type": "list",
+    "type": "input",
     "name": "department_id",
     "message": "Enter department id:"
   },
@@ -141,7 +142,7 @@ const viewEmpByDep = [
 
 const viewEmpByMgr = [
   {
-    "type": "list",
+    "type": "input",
     "name": "manager_id",
     "message": "Enter manager id:"
   },

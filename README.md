@@ -6,7 +6,7 @@
 - [License](#license)
 
 ## Description
-Node-SQL-Employee-Tracker is a comprehensive node application designed to streamline the management of employee data for businesses of all sizes. Leveraging the power of SQL databases, this application offers an intuitive command-line interface for performing a variety of HR-related operations, including viewing, adding, and updating employee records, roles, and departments.
+Node-SQL-Employee-Tracker is a comprehensive node application designed to streamline the management of employee data for businesses of all sizes. Leveraging the power of SQL databases, this application offers an intuitive command-line interface for performing a variety of HR-related operations, including viewing, adding, and updating employee roles and departments.
 
 ## Installation
 ```
@@ -17,7 +17,7 @@ npm i
 ```
 
 ## Usage
-After installation, you may edit schema.sql to your specifications and run ` run `node index.js` and you'll be prompted to select one of the following operations: 
+After installation, you may edit schema.sql to your specifications and run `node index.js` and you'll be prompted to select one of the following operations: 
 - View All Employees
 - Add Employee
 - Update Employee Role

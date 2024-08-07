@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const { Pool } = require('pg');
 require('dotenv').config();
-const { operations, addDep, addEmp, addRole, delDep, delEmp, delRole, updEmpRole, updEmpMgr, viewBudget, viewEmpByDep, viewEmpByMgr } = require('./utils/questions');
+const { operations, addDep, addEmp, addRole, delDep, delEmp, delRole, updEmpRole, updEmpMgr, viewBudget, viewEmpByDep, viewEmpByMgr} = require('./utils/questions');
 
 // Create a new pool to access employee database
 const pool = new Pool({
@@ -25,10 +25,10 @@ const viewAllEmployees = async () => {
 const addEmployee = async () => {
   try {
     const answers = await inquirer.prompt(addEmp);
-    await pool.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)', [answers.first_name, answers.last_name, answers.role_id, answers.manager_id]);
+    await pool.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)', [answers.first_name, answers.last_name, answers.role_id, answers.manager_id ? answers.manager_id : null]);
     console.log("Employee added successfully");
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }
 
@@ -57,7 +57,7 @@ const viewAllRoles = async () => {
 const addNewRole = async () => {
   try {
     const answers =  await inquirer.prompt(addRole);
-    await pool.query('INSERT INTO role (id, salary, department_id) VALUES ($1, $2, $3)', [answers.role_id, answers.salary, answers.department_id]);
+    await pool.query('INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3)', [answers.title, answers.salary, answers.department_id]);
     console.log("Role added successfully");
   } catch (err) {
     console.log(err)
@@ -78,7 +78,7 @@ const viewAllDepartments = async () => {
 const addDepartment = async () => { 
   try {
     const answers = await inquirer.prompt(addDep);
-    await pool.query('INSERT INTO department (department) VALUES ($1)', [answers.department]);
+    await pool.query('INSERT INTO department (name) VALUES ($1)', [answers.department_name]);
     console.log("Department added successfully");
   } catch (err) {
     console.log(err)
@@ -107,10 +107,12 @@ const deleteRole = async () => {
   }
 }
 
-// Deletes department based on user input
+// Deletes department along with its employees and roles based on user input
 const deleteDepartment = async () => {
   try {
     const answers = await inquirer.prompt(delDep);
+    await pool.query('DELETE FROM employee WHERE role_id IN (SELECT id FROM role WHERE department_id = $1)', [answers.department_id]);
+    await pool.query('DELETE FROM role WHERE department_id = $1', [answers.department_id]);
     await pool.query('DELETE FROM department WHERE id = $1', [answers.department_id]);
     console.log("Department deleted successfully");
   } catch(err) {
@@ -132,7 +134,8 @@ const updateEmployeeManager = async () => {
 // Displays all employees under specified manager in CLI
 const viewEmployeesByManager = async () => {
   try {
-    const res = await pool.query('SELECT manager_id FROM employee');
+    const answers = await inquirer.prompt(viewEmpByMgr);
+    const res = await pool.query('SELECT * from employee WHERE manager_id = $1', [answers.manager_id]);    
     console.table(res.rows);
   } catch(err) {
     console.log(err)
@@ -142,7 +145,8 @@ const viewEmployeesByManager = async () => {
 // Displays all employees in specified department in CLI
 const viewEmployeesByDepartment = async () => {
   try {
-    const res = await pool.query('SELECT department_id FROM employee');
+    const answers = await inquirer.prompt(viewEmpByDep);
+    const res = await pool.query('SELECT * from employee WHERE id = $1', [answers.department_id]);
     console.table(res.rows);
   } catch(err) {
     console.log(err)
@@ -152,8 +156,10 @@ const viewEmployeesByDepartment = async () => {
 // Displays total budget for specified department in CLI
 const viewDepartmentBudget = async () => {
   try {
-    const res = await pool.query('SELECT department_id FROM role');
-    console.table(res.rows);
+    const answers = await inquirer.prompt(viewBudget);
+    const res = await pool.query('SELECT SUM(salary) AS total_budget FROM role WHERE department_id = $1', [answers.department_id]);
+    const totalBudget = res.rows[0].total_budget;
+    console.log(`$${totalBudget}`);  
   } catch(err) {
     console.log(err)
   }
@@ -234,7 +240,7 @@ const manageEmployees = (operation) => {
       break;
     case "Quit":
       pool.end()
-      break;
+      process.exit()
   }
 }
 
